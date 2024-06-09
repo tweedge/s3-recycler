@@ -31,6 +31,7 @@ try:
 except Exception:
     recycler_startup_hold = 10
 
+print(f"RECYCLER: Booted, will sleep for {recycler_startup_hold} before starting")
 while True:
     sleep(recycler_startup_hold)
 
