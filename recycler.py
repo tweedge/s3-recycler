@@ -21,6 +21,7 @@ if not (
     and s3_secret_key
     and s3_bucket
     and recycler_sleep
+    and int(recycler_sleep) > 0
 ):
     print("RECYCLER: At least one environment key was falsey, quitting")
     exit(1)
@@ -36,7 +37,7 @@ while True:
         aws_secret_access_key=s3_secret_key,
     )
 
-    s3_paginator = s3.get_paginator('list_objects')
+    s3_paginator = s3.get_paginator("list_objects")
     s3_params = {"Bucket": s3_bucket}
 
     print("RECYCLER: Listing all current objects in the bucket ...")
@@ -46,8 +47,10 @@ while True:
         for s3_object in page["Contents"]:
             objects.append(s3_object["Key"])
 
-    print(f"RECYCLER: Found {len(objects)} objects to delete after sleeping {recycler_sleep}s")
-    sleep(recycler_sleep)
+    print(
+        f"RECYCLER: Found {len(objects)} objects to delete after sleeping {recycler_sleep}s"
+    )
+    sleep(int(recycler_sleep))
 
     print("RECYCLER: Setting up new boto3 session to delete tracked objects")
     boto3_session = boto3.session.Session()
