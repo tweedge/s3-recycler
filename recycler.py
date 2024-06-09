@@ -26,7 +26,14 @@ if not (
     print("RECYCLER: At least one environment key was falsey, quitting")
     exit(1)
 
+try:
+    recycler_startup_hold = int(getenv("RECYCLER_STARTUP_HOLD"))
+except Exception:
+    recycler_startup_hold = 10
+
 while True:
+    sleep(recycler_startup_hold)
+
     print("RECYCLER: Setting up new boto3 session to list all objects")
     boto3_session = boto3.session.Session()
     s3 = boto3_session.client(
@@ -44,6 +51,8 @@ while True:
     objects = []
     iterator = s3_paginator.paginate(**s3_params)
     for page in iterator:
+        if not "Contents" in page.keys():
+            break
         for s3_object in page["Contents"]:
             objects.append(s3_object["Key"])
 
