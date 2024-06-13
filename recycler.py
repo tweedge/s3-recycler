@@ -26,12 +26,21 @@ if not (
     print("RECYCLER: At least one environment key was falsey, quitting")
     exit(1)
 
+recycler_sleep = int(recycler_sleep)
+
 try:
     recycler_startup_hold = int(getenv("RECYCLER_STARTUP_HOLD"))
 except Exception:
     recycler_startup_hold = 10
 
-print(f"RECYCLER: Booted, will sleep for {recycler_startup_hold} before starting")
+if recycler_sleep > 60 * 60 * 5:
+    sleep_text = f"{round(recycler_sleep / 60 * 60), 3}h"
+elif recycler_sleep > 60 * 5:
+    sleep_text = f"{round(recycler_sleep / 60), 3}m"
+else:
+    sleep_text = f"{recycler_sleep}s"
+
+print(f"RECYCLER: Booted, will sleep for {recycler_startup_hold}s before starting")
 while True:
     sleep(recycler_startup_hold)
 
@@ -57,10 +66,17 @@ while True:
         for s3_object in page["Contents"]:
             objects.append(s3_object["Key"])
 
+    if len(objects) == 0:
+        print(
+            f"RECYCLER: No objects to delete, going to sleep {sleep_text} before looking again"
+        )
+        sleep(recycler_sleep)
+        continue
+
     print(
-        f"RECYCLER: Found {len(objects)} objects to delete after sleeping {recycler_sleep}s"
+        f"RECYCLER: Found {len(objects)} objects to delete after sleeping {sleep_text}"
     )
-    sleep(int(recycler_sleep))
+    sleep(recycler_sleep)
 
     print("RECYCLER: Setting up new boto3 session to delete tracked objects")
     boto3_session = boto3.session.Session()
