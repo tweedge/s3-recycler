@@ -34,7 +34,7 @@ except Exception:
     recycler_startup_hold = 10
 
 if recycler_sleep > 60 * 60 * 5:
-    sleep_text = f"{round(recycler_sleep / 60 * 60, 3)}h"
+    sleep_text = f"{round(recycler_sleep / (60 * 60), 3)}h"
 elif recycler_sleep > 60 * 5:
     sleep_text = f"{round(recycler_sleep / 60, 3)}m"
 else:
