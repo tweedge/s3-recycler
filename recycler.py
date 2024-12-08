@@ -4,14 +4,14 @@ from time import sleep
 import boto3
 
 try:
+    s3_bucket = getenv("S3_BUCKET")
     s3_region = getenv("S3_REGION")
     s3_endpoint_url = getenv("S3_ENDPOINT_URL")
     s3_access_key_id = getenv("S3_ACCESS_KEY_ID")
     s3_secret_key = getenv("S3_SECRET_KEY")
-    s3_bucket = getenv("S3_BUCKET")
     recycler_sleep = getenv("RECYCLER_SLEEP")
 except Exception as e:
-    print("RECYCLER: Not all environment keys are set, quitting")
+    print("RECYCLER: Not all required environment keys are set, see README, quitting")
     exit(1)
 
 if not (
@@ -23,7 +23,7 @@ if not (
     and recycler_sleep
     and int(recycler_sleep) > 0
 ):
-    print("RECYCLER: At least one environment key was falsey, quitting")
+    print("RECYCLER: At least one environment key was falsey, see README, quitting")
     exit(1)
 
 recycler_sleep = int(recycler_sleep)

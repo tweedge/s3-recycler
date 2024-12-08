@@ -1,9 +1,20 @@
-FROM alpine:latest
+# Use a regular Python image to install packages
+FROM python:3.12-slim as builder
 
-COPY ./recycler.py /opt/recycler.py
-RUN apk add --no-cache python3 py3-boto3
+# Install the required packages
+RUN pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org boto3
 
-RUN adduser -D nonroot
-USER nonroot
+# Switch to the distroless image w/ non-root config loaded
+# USER: nonroot
+# WORKDIR: /home/nonroot/
+FROM gcr.io/distroless/python3-debian12:nonroot
 
-CMD ["python3", "-u", "/opt/recycler.py"]
+# Copy the installed packages
+COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
+COPY --from=builder /usr/local/bin /usr/local/bin
+
+# Copy application
+COPY ./recycler.py /home/nonroot/recycler.py
+
+# Setup
+CMD ["python3", "-u", "/home/nonroot/recycler.py"]
