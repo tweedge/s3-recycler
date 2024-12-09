@@ -1,4 +1,9 @@
 # s3-recycler
+[![DockerHub Link](https://img.shields.io/docker/pulls/tweedge/s3-recycler)](https://hub.docker.com/repository/docker/tweedge/s3-recycler)
+[![License](https://img.shields.io/github/license/tweedge/s3-recycler)](https://github.com/tweedge/s3-recycler)
+[![Written By](https://img.shields.io/badge/written%20by-some%20nerd-red.svg)](https://chris.partridge.tech)
+[![Author Also Writes On](https://img.shields.io/mastodon/follow/108210086817505115?domain=https%3A%2F%2Fcybersecurity.theater)](https://cybersecurity.theater/@tweedge)
+
 Not all S3 providers have automatic deletion capabilities, so this is an inefficient little sidecar to list out and delete all files in an S3 bucket periodically. It's also a little playground I used to learn about building distroless images.
 
 ## Config
