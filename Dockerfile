@@ -16,5 +16,6 @@ COPY --from=builder /usr/local/bin /usr/local/bin
 # Copy application
 COPY ./recycler.py /home/nonroot/recycler.py
 
-# Setup
-CMD ["python3", "-u", "/home/nonroot/recycler.py"]
+# Set command to run at startup
+# ENTRYPOINT is already set to the python3 binary, so we don't need to add it!
+CMD ["-u", "/home/nonroot/recycler.py"]
