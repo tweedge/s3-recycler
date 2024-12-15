@@ -23,9 +23,6 @@ jobs:
         with:
           push: true
           tags: tweedge/s3-recycler:latest
-      - name: Inspect image
-        run: |
-          docker image inspect tweedge/s3-recycler:latest
       - name: Generate SBOM for image
         uses: anchore/sbom-action@v0
         with:
