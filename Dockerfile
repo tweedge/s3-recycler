@@ -25,6 +25,5 @@ ENV PYTHONPATH=/usr/local/lib/python3.11/site-packages
 # Copy in our application
 COPY ./recycler.py /home/nonroot/recycler.py
 
-# Set commands to run at startup
-# ENTRYPOINT is already set to the python3 binary, CMD appends to that!
+# Set command to run at startup
 ENTRYPOINT ["python3", "-u", "/home/nonroot/recycler.py"]
