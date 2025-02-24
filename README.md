@@ -20,3 +20,4 @@ Not all S3 providers have automatic deletion capabilities, so this is an ineffic
 **Optional** environment variables to set are:
 
 * `RECYCLER_STARTUP_HOLD` - ex. `60`, how long to sleep (in seconds) when the container first starts
+* `RECYCLER_SKIP_N_ITEMS` - print a message every n deleted items

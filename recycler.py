@@ -1,5 +1,5 @@
 from os import getenv
-from time import sleep
+from time import sleep, time
 
 import boto3
 
@@ -32,6 +32,11 @@ try:
     recycler_startup_hold = int(getenv("RECYCLER_STARTUP_HOLD"))
 except Exception:
     recycler_startup_hold = 10
+
+try:
+    recycler_skip_n_items = int(getenv("RECYCLER_SKIP_N_ITEMS"))
+except Exception:
+    recycler_skip_n_items = 0
 
 if recycler_sleep > 60 * 60 * 5:
     sleep_text = f"{round(recycler_sleep / (60 * 60), 3)}h"
@@ -66,7 +71,8 @@ while True:
         for s3_object in page["Contents"]:
             objects.append(s3_object["Key"])
 
-    if len(objects) == 0:
+    todo = len(objects)
+    if todo == 0:
         print(
             f"RECYCLER: No objects to delete, going to sleep {sleep_text} before looking again"
         )
@@ -74,7 +80,7 @@ while True:
         continue
 
     print(
-        f"RECYCLER: Found {len(objects)} objects to delete after sleeping {sleep_text}"
+        f"RECYCLER: Found {todo} objects to delete after sleeping {sleep_text}"
     )
     sleep(recycler_sleep)
 
@@ -88,7 +94,30 @@ while True:
         aws_secret_access_key=s3_secret_key,
     )
 
-    print("RECYCLER: Deleting items from the bucket ...")
+    if recycler_skip_n_items < 1:
+        print("RECYCLER: Deleting items from the bucket ...")
+    else:
+        print(f"RECYCLER: Deleting items from the bucket (will log every {recycler_skip_n_items} deleted items)...")
+    
+    n = 0
+    done = 0
+    time_start = time()
+
     for s3_object_key in objects:
         s3.delete_object(Bucket=s3_bucket, Key=s3_object_key)
-        print(f"RECYCLER: Deleted {s3_object_key}")
+        n += 1
+        done += 1
+
+        if n > recycler_skip_n_items:
+            n = 0
+            time_left = (done/(time() - time_start)) * (todo-done)
+            if time_left > 60 * 60 * 5:
+                pretty_time_left = f"{round(time_left / (60 * 60), 3)}h"
+            elif time_left > 60 * 5:
+                pretty_time_left = f"{round(time_left / 60, 3)}m"
+            else:
+                pretty_time_left = f"{time_left}s"
+
+            print(f"RECYCLER: Deleted {s3_object_key} ({done}/{todo}, ECD {pretty_time_left})")
+
+    print("RECYCLER: Deleted all tracked items!")
