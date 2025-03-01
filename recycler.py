@@ -101,23 +101,14 @@ while True:
     
     n = 0
     done = 0
-    time_start = time()
 
     for s3_object_key in objects:
         s3.delete_object(Bucket=s3_bucket, Key=s3_object_key)
         n += 1
         done += 1
 
-        if n > recycler_skip_n_items:
+        if n >= recycler_skip_n_items:
             n = 0
-            time_left = (done/(time() - time_start)) * (todo-done)
-            if time_left > 60 * 60 * 5:
-                pretty_time_left = f"{round(time_left / (60 * 60), 3)}h"
-            elif time_left > 60 * 5:
-                pretty_time_left = f"{round(time_left / 60, 3)}m"
-            else:
-                pretty_time_left = f"{time_left}s"
-
-            print(f"RECYCLER: Deleted {s3_object_key} ({done}/{todo}, ECD {pretty_time_left})")
+            print(f"RECYCLER: Deleted {s3_object_key} ({done}/{todo})")
 
     print("RECYCLER: Deleted all tracked items!")
